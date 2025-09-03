@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Подача заявки</title>
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --primary-dark: #5649c7;
+            --secondary: #a29bfe;
+            --accent: #fd79a8;
+            --dark: #121212;
+            --darker: #0a0a0a;
+            --light: #dfe6e9;
+            --success: #00b894;
+            --error: #d63031;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: var(--darker);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: var(--light);
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        /* Анимированный фон */
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            opacity: 0.3;
+            animation: float 15s infinite ease-in-out;
+        }
+        
+        @keyframes float {
+            0%, 100% {
+                transform: translate(0, 0) scale(1);
+                opacity: 0.2;
+            }
+            25% {
+                transform: translate(20px, 40px) scale(1.1);
+                opacity: 0.3;
+            }
+            50% {
+                transform: translate(-30px, 60px) scale(0.9);
+                opacity: 0.25;
+            }
+            75% {
+                transform: translate(10px, -20px) scale(1.05);
+                opacity: 0.35;
+            }
+        }
+        
+        .glow {
+            position: absolute;
+            width: 60%;
+            height: 60%;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.15;
+            animation: pulse 10s infinite alternate;
+        }
+        
+        .glow-1 {
+            background: var(--primary);
+            top: -20%;
+            right: -10%;
+        }
+        
+        .glow-2 {
+            background: var(--accent);
+            bottom: -20%;
+            left: -10%;
+        }
+        
+        @keyframes pulse {
+            0% {
+                opacity: 0.1;
+                transform: scale(0.8);
+            }
+            100% {
+                opacity: 0.2;
+                transform: scale(1.2);
+            }
+        }
+        
+        .container {
+            background: rgba(18, 18, 18, 0.85);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 500px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+        }
+        
+        .form-container {
+            padding: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--light);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+            color: var(--light);
+        }
+        
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.3);
+            background: rgba(255, 255, 255, 0.12);
+        }
+        
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+        
+        .btn:hover::before {
+            left: 100%;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(108, 92, 231, 0.3);
+        }
+        
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .alert-success {
+            background: rgba(0, 184, 148, 0.2);
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+        
+        .alert-error {
+            background: rgba(214, 48, 49, 0.2);
+            color: var(--error);
+            border: 1px solid var(--error);
+        }
+        
+        .instructions {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            border-left: 4px solid var(--secondary);
+        }
+        
+        .instructions h3 {
+            margin-bottom: 10px;
+            color: var(--light);
+        }
+        
+        .instructions ol {
+            padding-left: 20px;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+            opacity: 0.9;
+        }
+        
+        .admin-config {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(255, 215, 0, 0.08);
+            border-radius: 8px;
+            border-left: 4px solid rgba(255, 215, 0, 0.5);
+            display: none;
+        }
+        
+        .admin-config h3 {
+            margin-bottom: 10px;
+            color: var(--light);
+        }
+        
+        .admin-toggle {
+            text-align: center;
+            margin-top: 20px;
+            cursor: pointer;
+            color: var(--secondary);
+            font-weight: 600;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+        
+        .admin-toggle:hover {
+            opacity: 1;
+        }
+        
+        .password-group {
+            margin-bottom: 15px;
+        }
+        
+        @media (max-width: 576px) {
+            .container {
+                border-radius: 12px;
+            }
+            
+            .header {
+                padding: 20px 15px;
+            }
+            
+            .form-container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="background">
+        <div class="particles" id="particles"></div>
+        <div class="glow glow-1"></div>
+        <div class="glow glow-2"></div>
+    </div>
+    
+    <div class="container">
+        <div class="header">
+            <h1>Подача заявки</h1>
+            <p>Заполните форму, и мы рассмотрим вашу заявку</p>
+        </div>
+        
+        <div class="form-container">
+            <div class="alert alert-success" id="successAlert">
+                Ваша заявка успешно отправлена! Ожидайте ответа.
+            </div>
+            
+            <div class="alert alert-error" id="errorAlert">
+                Произошла ошибка при отправке заявки.
+            </div>
+            
+            <form id="applicationForm">
+                <div class="form-group">
+                    <label for="name">Ваше имя</label>
+                    <input type="text" id="name" class="form-control" placeholder="Подскажите, как к вам обращаться?" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="contact">Контактная информация</label>
+                    <input type="text" id="contact" class="form-control" placeholder="Telegram username" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="message">Ваша заявка</label>
+                    <textarea id="message" class="form-control" placeholder="текст для заявки" required></textarea>
+                </div>
+                
+                <button type="submit" class="btn">Отправить заявку</button>
+            </form>
+            
+            <div class="instructions">
+                <h3>Как правильно подать заявку?</h3>
+                <ol>
+                    <li>Укажите реальное имя или как к вам обращаться</li>
+                    <li>Предоставьте актуальные контактные данные</li>
+                    <li>Подробно опишите причину вашего обращения</li>
+                    <li>Если некорректная причина наказания то опишите ситуацию</li>
+                    <li>Будьте вежливы и соблюдайте правила сообщества</li>
+                </ol>
+            </div>
+            
+            <div class="admin-toggle" id="adminToggle">
+                Настройки администратора
+            </div>
+            
+            <div class="admin-config" id="adminConfig">
+                <h3>Для администраторов</h3>
+                <p>...</p>
+                
+                <div class="form-group password-group">
+                    <label for="adminPassword">Пароль администратора</label>
+                    <input type="password" id="adminPassword" class="form-control" placeholder="Введите пароль">
+                </div>
+                
+                <div class="form-group">
+                    <label for="botToken">Токен бота</label>
+                    <input type="text" id="botToken" class="form-control" placeholder="123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ">
+                </div>
+                
+                <div class="form-group">
+                    <label for="chatId">ID группы/чата</label>
+                    <input type="text" id="chatId" class="form-control" placeholder="-1001234567890">
+                </div>
+                
+                <button type="button" class="btn" id="saveConfig">Сохранить настройки</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Создание анимированных частиц на фоне
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 30;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                // Случайные размеры и позиции
+                const size = Math.random() * 20 + 5;
+                const posX = Math.random() * 100;
+                const posY = Math.random() * 100;
+                const delay = Math.random() * 15;
+                
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.left = `${posX}%`;
+                particle.style.top = `${posY}%`;
+                particle.style.animationDelay = `${delay}s`;
+                
+                particlesContainer.appendChild(particle);
+            }
+        }
+        
+        // Функция для сохранения настроек в локальное хранилище
+        function saveConfig() {
+            const password = document.getElementById('adminPassword').value;
+            if (password !== 'e2e89996') {
+                alert('Неверный пароль администратора');
+                return;
+            }
+            
+            const botToken = document.getElementById('botToken').value;
+            const chatId = document.getElementById('chatId').value;
+            
+            if (botToken && chatId) {
+                localStorage.setItem('telegramBotToken', botToken);
+                localStorage.setItem('telegramChatId', chatId);
+                alert('Настройки сохранены!');
+                document.getElementById('adminPassword').value = '';
+            } else {
+                alert('Заполните все поля настроек');
+            }
+        }
+        
+        // Функция для загрузки настроек из локального хранилища
+        function loadConfig() {
+            const botToken = localStorage.getItem('telegramBotToken');
+            const chatId = localStorage.getItem('telegramChatId');
+            
+            if (botToken) document.getElementById('botToken').value = botToken;
+            if (chatId) document.getElementById('chatId').value = chatId;
+        }
+        
+        // Функция для отправки сообщения в Telegram
+        async function sendToTelegram(message) {
+            const botToken = localStorage.getItem('telegramBotToken');
+            const chatId = localStorage.getItem('telegramChatId');
+            
+            if (!botToken || !chatId) {
+                alert('Настройки бота не найдены. Обратитесь к администратору.');
+                return false;
+            }
+            
+            const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
+            
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        chat_id: chatId,
+                        text: message,
+                        parse_mode: 'HTML'
+                    })
+                });
+                
+                const result = await response.json();
+                return result.ok;
+            } catch (error) {
+                console.error('Ошибка отправки в Telegram:', error);
+                return false;
+            }
+        }
+        
+        // Обработчик отправки формы
+        document.getElementById('applicationForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = this.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Отправка...';
+            
+            // Скрываем предыдущие уведомления
+            document.getElementById('successAlert').style.display = 'none';
+            document.getElementById('errorAlert').style.display = 'none';
+            
+            const formData = {
+                name: document.getElementById('name').value,
+                contact: document.getElementById('contact').value,
+                message: document.getElementById('message').value
+            };
+            
+            // Форматируем сообщение для Telegram
+            const telegramMessage = 
+                `<b>Новая заявка с сайта!</b>\n\n` +
+                `<b>Имя:</b> ${formData.name}\n` +
+                `<b>Контакт:</b> ${formData.contact}\n` +
+                `<b>Сообщение:</b>\n${formData.message}`;
+            
+            try {
+                const success = await sendToTelegram(telegramMessage);
+                
+                if (success) {
+                    document.getElementById('successAlert').style.display = 'block';
+                    document.getElementById('applicationForm').reset();
+                } else {
+                    document.getElementById('errorAlert').textContent = 'Ошибка отправки заявки. Проверьте настройки бота.';
+                    document.getElementById('errorAlert').style.display = 'block';
+                }
+            } catch (error) {
+                document.getElementById('errorAlert').textContent = 'Ошибка соединения. Попробуйте позже.';
+                document.getElementById('errorAlert').style.display = 'block';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Отправить заявку';
+                
+                // Прокрутка к верху для показа уведомления
+                window.scrollTo(0, 0);
+            }
+        });
+        
+        // Обработчик сохранения настроек
+        document.getElementById('saveConfig').addEventListener('click', saveConfig);
+        
+        // Переключение видимости настроек администратора
+        document.getElementById('adminToggle').addEventListener('click', function() {
+            const adminConfig = document.getElementById('adminConfig');
+            if (adminConfig.style.display === 'block') {
+                adminConfig.style.display = 'none';
+            } else {
+                adminConfig.style.display = 'block';
+                document.getElementById('adminPassword').value = '';
+            }
+        });
+        
+        // Загрузка настроек при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            createParticles();
+            loadConfig();
+        });
+    </script>
+</body>
+</html>
